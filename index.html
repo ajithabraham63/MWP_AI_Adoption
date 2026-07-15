@@ -4,235 +4,154 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MWP AI Adoption Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
       :root {
-        --bg: #f3f7fb;
+        --bg: #f4f7fb;
         --panel: #ffffff;
-        --border: #dce4ee;
-        --text: #0f172a;
-        --muted: #5f6b7a;
-        --brand: #1a73e8;
+        --border: #e6eef6;
+        --text: #0b1230;
+        --muted: #6b7785;
+        --brand: #165fcc;
         --brand-2: #0f9d58;
         --amber: #f4b400;
         --red: #db4437;
-        --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        --shadow: 0 10px 30px rgba(12, 24, 48, 0.08);
+        --soft-shadow: 0 6px 16px rgba(12,24,48,0.06);
       }
 
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
         color: var(--text);
-        background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+        background: linear-gradient(180deg, #fbfdff 0%, var(--bg) 100%);
       }
 
       .hero {
-        background: linear-gradient(135deg, #1a73e8 0%, #0f9d58 55%, #f4b400 100%);
+        background: linear-gradient(90deg,#05204a 0%, #0b3a6f 60%);
         color: white;
-        padding: 20px 24px;
+        padding: 18px 28px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        box-shadow: var(--shadow);
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-
-      .brand .logo {
-        width: 54px;
-        height: 54px;
-        background: rgba(255, 255, 255, 0.16);
-        border: 1px solid rgba(255, 255, 255, 0.32);
-        border-radius: 16px;
-        display: grid;
-        place-items: center;
-        backdrop-filter: blur(8px);
-      }
-
-      .brand svg { width: 36px; height: 36px; }
-      .brand h1 { margin: 0; font-size: 24px; }
-      .brand p { margin: 3px 0 0; opacity: 0.9; font-size: 13px; }
-
-      .meta {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-
-      .pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.18);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        padding: 8px 12px;
-        border-radius: 999px;
-        font-size: 12px;
-        backdrop-filter: blur(8px);
-      }
-
-      .btn {
-        border: 0;
-        border-radius: 999px;
-        padding: 8px 14px;
-        background: white;
-        color: var(--brand);
-        font-weight: 600;
-        cursor: pointer;
-      }
-
-      .btn:hover { transform: translateY(-1px); }
-
-      main {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 24px;
-        display: grid;
         gap: 18px;
+        box-shadow: 0 8px 24px rgba(3,10,30,0.45);
+        border-bottom-left-radius: 12px;
+        border-bottom-right-radius: 12px;
       }
 
-      .summary-grid {
-        display: grid;
-        gap: 14px;
-        grid-template-columns: repeat(6, minmax(0, 1fr));
-      }
+      .brand { display: flex; align-items: center; gap: 14px; }
+      .brand .logo { width: 56px; height: 56px; background: transparent; border-radius:12px; display:grid; place-items:center; box-shadow:none; border:0 }
+      .brand .org { font-weight:800; margin:0; font-size:18px; color:#fff; display:inline-block }
+      .brand h1 { margin:0 0 0 8px; font-size:20px; font-weight:700; color: #fff }
+      .brand .org-sep { margin:0 6px; color:rgba(255,255,255,0.9); font-weight:700 }
 
-      .kpi-card, .panel {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        box-shadow: var(--shadow);
-        padding: 16px;
-      }
+      .meta { display:flex; align-items:center; gap:12px }
+      .btn { border:0; border-radius:999px; padding:8px 14px; background:white; color:var(--brand); font-weight:600; cursor:pointer; box-shadow:0 2px 6px rgba(12,24,48,0.06) }
+      .btn.icon-btn { padding:8px; width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center }
 
-      .kpi-card .label {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.7px;
-        color: var(--muted);
-        font-weight: 700;
-      }
+      main { max-width:1400px; margin:18px auto 48px; padding:6px 24px 28px; display:grid; gap:22px }
 
-      .kpi-card .value {
-        display: block;
-        font-size: 28px;
-        font-weight: 700;
-        margin-top: 6px;
-      }
+      .summary-grid { display:grid; gap:18px; grid-template-columns: repeat(6, minmax(0,1fr)); }
+      .kpi-card, .panel { background:var(--panel); border:1px solid var(--border); border-radius:14px; box-shadow:var(--soft-shadow); padding:18px }
+      .kpi-card { display:flex; flex-direction:column; justify-content:center }
+      .kpi-card .label { font-size:12px; color:var(--muted); font-weight:700 }
+      .kpi-card .value { font-size:34px; font-weight:800; margin-top:8px }
+      .kpi-card .hint { font-size:13px; color:var(--muted); margin-top:8px }
 
-      .kpi-card .hint {
-        color: var(--muted);
-        font-size: 12px;
-        margin-top: 6px;
-      }
+      .charts-grid { display:grid; gap:18px; grid-template-columns: 1.1fr 0.9fr }
+      .panel h3 { margin:4px 0 14px; font-size:16px; font-weight:700 }
+      .panel .canvas-wrap { position:relative; height:360px }
 
-      .charts-grid {
-        display: grid;
-        gap: 18px;
-        grid-template-columns: 1.1fr 0.9fr;
-      }
+      .toolbar { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px }
+      .toolbar input, .toolbar select { border:1px solid var(--border); border-radius:10px; padding:8px 12px; font:inherit; min-width:180px; background:#fff }
 
-      .panel h3 {
-        margin: 0 0 10px;
-        font-size: 15px;
-      }
+      .table-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:12px }
+      table { width:100%; border-collapse:collapse; min-width:760px }
+      th, td { padding:14px 16px; border-bottom:1px solid var(--border); text-align:left; font-size:14px }
+      th { background:#fff; color:var(--muted); font-weight:700; position:sticky; top:0 }
+      tbody tr td:first-child { font-weight:600; color:#10203a }
 
-      .panel .canvas-wrap {
-        position: relative;
-        height: 320px;
-      }
+      .pill-badge { font-weight:700; padding:6px 10px; border-radius:999px; font-size:13px }
+      .pill-badge.low { background:#fff4f4; color:#b92a25 }
+      .pill-badge.moderate { background:#fffbf0; color:#b76a00 }
+      .pill-badge.high { background:#ecfbef; color:#0f7f3a }
+      .pill-badge.empty { background:#f1f5f9; color:#617085 }
 
-      .toolbar {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-bottom: 12px;
-      }
+      .note { font-size:12px; color:var(--muted); margin-top:6px }
 
-      .toolbar input, .toolbar select {
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 8px 10px;
-        font: inherit;
-        min-width: 180px;
-      }
+      @media (max-width:1100px) { .summary-grid { grid-template-columns: repeat(3, minmax(0,1fr)) } .charts-grid { grid-template-columns:1fr } }
+      @media (max-width:640px) { .summary-grid { grid-template-columns: repeat(2, minmax(0,1fr)) } .hero { flex-direction:column; align-items:flex-start } .brand { width:100% } }
+      /* Splash overlay styles */
+      .splash { position:fixed; inset:0; background:linear-gradient(180deg, rgba(22,95,204,0.92), rgba(14,157,88,0.9)); z-index:1200; display:flex; align-items:center; justify-content:center; }
+      .splash-inner { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); padding:22px 30px; border-radius:14px; display:flex; flex-direction:column; align-items:center; gap:12px; color:white; box-shadow:0 30px 80px rgba(3,10,30,0.5); min-width:640px; max-width:86%; backdrop-filter: blur(8px); border:1px solid rgba(255,255,255,0.06) }
+      .splash-row { display:flex; align-items:center; gap:14px; width:100% }
+      .splash-logo-wrap { width:72px; height:72px; background:#fff; border-radius:14px; display:grid; place-items:center; box-shadow:0 10px 28px rgba(3,10,30,0.28); padding:6px }
+      .splash-title { font-size:20px; font-weight:800; letter-spacing:0.2px; color:#ffffff }
+      .splash-sub { font-size:13px; color:rgba(255,255,255,0.9); margin-top:2px }
+      .splash-text { font-size:15px; font-weight:700; color:#ffffff; margin-top:6px }
+      .splash-spinner { width:40px; height:40px; border-radius:50%; border:4px solid rgba(255,255,255,0.14); border-top-color: rgba(255,255,255,0.95); animation:spin 1s linear infinite; margin-top:6px }
+        /* Floating top-left logo */
+        .floating-logo { position:fixed; left:14px; top:14px; z-index:1300; width:56px; height:56px; display:grid; place-items:center; background:#082044; border-radius:12px; border:0; box-shadow:0 8px 20px rgba(3,10,30,0.45) }
+        .site-footer { max-width:1400px; margin:10px auto 40px; padding:14px 24px; display:flex; gap:12px; align-items:center; justify-content:space-between; color:var(--muted); font-size:13px }
+        .site-footer .footer-left { display:flex; gap:12px; align-items:center }
+        .site-footer .footer-left .logo-small { width:36px; height:36px; display:grid; place-items:center; }
 
-      .table-wrap {
-        overflow-x: auto;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 760px;
-      }
-
-      th, td {
-        padding: 10px 12px;
-        border-bottom: 1px solid var(--border);
-        text-align: left;
-        font-size: 13px;
-      }
-
-      th {
-        background: #f9fbfd;
-        color: var(--muted);
-        font-weight: 700;
-        position: sticky;
-        top: 0;
-      }
-
-      tr:hover td { background: #fbfdff; }
-
-      .pill-badge {
-        display: inline-flex;
-        align-items: center;
-        border-radius: 999px;
-        padding: 4px 8px;
-        font-size: 11px;
-        font-weight: 700;
-      }
-
-      .pill-badge.low { background: #fce8e6; color: #a50e0e; }
-      .pill-badge.moderate { background: #fef7e0; color: #b06000; }
-      .pill-badge.high { background: #e6f4ea; color: #137333; }
-      .pill-badge.empty { background: #eef2f7; color: #4b5563; }
-
-      .status { font-size: 12px; color: var(--muted); }
-      .note {
-        font-size: 12px;
-        color: var(--muted);
-        margin-top: 6px;
-      }
-
-      @media (max-width: 1100px) {
-        .summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .charts-grid { grid-template-columns: 1fr; }
-      }
-
-      @media (max-width: 640px) {
-        .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .hero { flex-direction: column; align-items: flex-start; }
-        .brand { width: 100%; }
-      }
+      @keyframes spin { to { transform:rotate(360deg) } }
+      .splash.hidden { display:none }
     </style>
   </head>
   <body>
+    <!-- Splash overlay shown while data / charts initialize -->
+    <div id="splash" class="splash">
+      <div class="splash-inner">
+        <div class="splash-row">
+          <div class="splash-logo-wrap" aria-hidden="true">
+            <svg width="52" height="44" viewBox="0 0 52.1 44" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="cogBSplash1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3d54ce"/><stop offset="100%" stop-color="#35cacf"/></linearGradient>
+                <linearGradient id="cogBSplash2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#13457d"/><stop offset="100%" stop-color="#279698"/></linearGradient>
+                <linearGradient id="cogBSplash3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#090086"/><stop offset="100%" stop-color="#2f96a9"/></linearGradient>
+                <linearGradient id="cogBSplash4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3b62ca"/><stop offset="100%" stop-color="#93dfe3"/></linearGradient>
+              </defs>
+              <path d="M0 22 L15.3 44 L31.1 34.5 L22.2 22 Z" fill="url(#cogBSplash1)"/>
+              <path d="M15.3 44 L37.1 44 L52.1 22 Z" fill="url(#cogBSplash2)"/>
+              <path d="M15.3 0 L0 22 L22.2 22 L31.1 9.5 Z" fill="url(#cogBSplash3)"/>
+              <path d="M15.3 0 L52.1 22 L37.1 0 Z" fill="url(#cogBSplash4)"/>
+            </svg>
+          </div>
+          <div style="flex:1">
+            <div class="splash-title">Cognizant — MWP AI Adoption Tracker</div>
+            <div class="splash-sub">Loading data and building charts — using embedded snapshot if live fetch is blocked.</div>
+          </div>
+        </div>
+        <div class="splash-text">Loading dashboard…</div>
+        <div class="splash-spinner" aria-hidden="true"></div>
+      </div>
+    </div>
     <header class="hero">
       <div class="brand">
         <div class="logo" aria-label="Cognizant logo">
-          <img src="https://www.cognizant.com/content/dam/cognizant-com/global/images/cognizant-logo-blue.svg" alt="Cognizant logo" style="height:36px;object-fit:contain;" />
+          <svg width="56" height="48" viewBox="0 0 52.1 44" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+            <defs>
+              <linearGradient id="cogB1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3d54ce"/><stop offset="100%" stop-color="#35cacf"/></linearGradient>
+              <linearGradient id="cogB2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#13457d"/><stop offset="100%" stop-color="#279698"/></linearGradient>
+              <linearGradient id="cogB3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#090086"/><stop offset="100%" stop-color="#2f96a9"/></linearGradient>
+              <linearGradient id="cogB4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3b62ca"/><stop offset="100%" stop-color="#93dfe3"/></linearGradient>
+            </defs>
+            <path d="M0 22 L15.3 44 L31.1 34.5 L22.2 22 Z" fill="url(#cogB1)"/>
+            <path d="M15.3 44 L37.1 44 L52.1 22 Z" fill="url(#cogB2)"/>
+            <path d="M15.3 0 L0 22 L22.2 22 L31.1 9.5 Z" fill="url(#cogB3)"/>
+            <path d="M15.3 0 L52.1 22 L37.1 0 Z" fill="url(#cogB4)"/>
+          </svg>
         </div>
-        <div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="org">Cognizant</div>
+          <div class="org-sep">—</div>
           <h1>MWP AI Adoption Tracker</h1>
         </div>
       </div>
@@ -245,6 +164,22 @@
         </button>
       </div>
     </header>
+
+    <!-- Floating small logo at top-left for persistent branding -->
+    <div class="floating-logo" aria-hidden="true">
+      <svg width="44" height="36" viewBox="0 0 52.1 44" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+        <defs>
+          <linearGradient id="cogBFloat1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3d54ce"/><stop offset="100%" stop-color="#35cacf"/></linearGradient>
+          <linearGradient id="cogBFloat2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#13457d"/><stop offset="100%" stop-color="#279698"/></linearGradient>
+          <linearGradient id="cogBFloat3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#090086"/><stop offset="100%" stop-color="#2f96a9"/></linearGradient>
+          <linearGradient id="cogBFloat4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3b62ca"/><stop offset="100%" stop-color="#93dfe3"/></linearGradient>
+        </defs>
+        <path d="M0 22 L15.3 44 L31.1 34.5 L22.2 22 Z" fill="url(#cogBFloat1)"/>
+        <path d="M15.3 44 L37.1 44 L52.1 22 Z" fill="url(#cogBFloat2)"/>
+        <path d="M15.3 0 L0 22 L22.2 22 L31.1 9.5 Z" fill="url(#cogBFloat3)"/>
+        <path d="M15.3 0 L52.1 22 L37.1 0 Z" fill="url(#cogBFloat4)"/>
+      </svg>
+    </div>
 
     <main>
       <section class="summary-grid">
@@ -326,8 +261,259 @@
       </section>
     </main>
 
+    <footer class="site-footer">
+      <div class="footer-left">
+        <div class="logo-small" aria-hidden="true">
+          <svg width="32" height="28" viewBox="0 0 52.1 44" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="cogBFoot1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3d54ce"/><stop offset="100%" stop-color="#35cacf"/></linearGradient>
+              <linearGradient id="cogBFoot2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#13457d"/><stop offset="100%" stop-color="#279698"/></linearGradient>
+              <linearGradient id="cogBFoot3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#090086"/><stop offset="100%" stop-color="#2f96a9"/></linearGradient>
+              <linearGradient id="cogBFoot4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3b62ca"/><stop offset="100%" stop-color="#93dfe3"/></linearGradient>
+            </defs>
+            <path d="M0 22 L15.3 44 L31.1 34.5 L22.2 22 Z" fill="url(#cogBFoot1)"/>
+            <path d="M15.3 44 L37.1 44 L52.1 22 Z" fill="url(#cogBFoot2)"/>
+            <path d="M15.3 0 L0 22 L22.2 22 L31.1 9.5 Z" fill="url(#cogBFoot3)"/>
+            <path d="M15.3 0 L52.1 22 L37.1 0 Z" fill="url(#cogBFoot4)"/>
+          </svg>
+        </div>
+      </div>
+    </footer>
+
     <script>
-      const REMOTE_URL = 'https://defaultde08c40719b9427d9fe8edf254300c.a7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/491615548ef84101a7531c0338834d0b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MykhtoyoloODW1Ju0fZqNO6EHCI_30noIzhz8mNoJo8';
+        // Primary remote Power Automate URL — browser will attempt to fetch this.
+        // If the request is blocked by CORS, the embedded fallback data will be used.
+        const REMOTE_URL = 'https://defaultde08c40719b9427d9fe8edf254300c.a7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/491615548ef84101a7531c0338834d0b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MykhtoyoloODW1Ju0fZqNO6EHCI_30noIzhz8mNoJo8';
+
+        // Embedded fallback dataset (copied from your saved adoption-data.json)
+        const FALLBACK_JSON = `{
+      "@odata.context":  "https://172.20.7.0:9001/$metadata#drives(\u0027b%21WYNNBJ-3006MPKavpjtOFZGu45Rf8TVGlAJzj8XNKW01VYp4YVkfQ7QsIeLcImFc\u0027)/Files(\u002701GWVYG47OZZWDOI6PSFD3DDNYQ3IPLQNF\u0027)/Tables(\u0027%7BF2C321AB-95D2-4D3A-B19B-6D5AE92C4659%7D\u0027)/items",
+      "value":  [
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "a09c2d82-05e6-40ec-87f5-dbb7f6c3ac4e",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "OTSUKA",
+                "Delivery PoC":  "Adamya Kant",
+                "Delivery PoC ID":  "2087329",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "No MWP resource in this a/c",
+                "Adoption Level":  "",
+                "MWP Resource Count":  "0",
+                "Initial Sync-Up Status":  "",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "c351d2e1-fed3-4730-b97b-b43fd638cbbc",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "SANDOZ",
+                "Delivery PoC":  "Adamya Kant",
+                "Delivery PoC ID":  "2087329",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "Anjali.r@cognizant.com",
+                "Adoption Level":  "Low",
+                "MWP Resource Count":  "12",
+                "Initial Sync-Up Status":  "",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "9a5f716c-e2ec-40d7-97da-c5c1beca3719",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "MEDTRONIC",
+                "Delivery PoC":  "Adamya Kant",
+                "Delivery PoC ID":  "2087329",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "Himanshu.Ratnakar@cognizant.com",
+                "Adoption Level":  "Low",
+                "MWP Resource Count":  "6",
+                "Initial Sync-Up Status":  "",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "81ab5a23-71df-4d74-91d3-936b0c05518f",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "HOOKIPA BIOTECH",
+                "Delivery PoC":  "Ankita",
+                "Delivery PoC ID":  "163368",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "No MWP resource in this a/c",
+                "Adoption Level":  "",
+                "MWP Resource Count":  "0",
+                "Initial Sync-Up Status":  "",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "b6c2cb5b-1dd1-4c08-96a0-dd82abc5f5e7",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "GRUNENTHAL",
+                "Delivery PoC":  "Ankita",
+                "Delivery PoC ID":  "163368",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "No MWP resource in this a/c",
+                "Adoption Level":  "",
+                "MWP Resource Count":  "0",
+                "Initial Sync-Up Status":  "",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "e2207362-32bc-4abc-9058-624919e84989",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "THERMOFISHER SCIENTIFIC",
+                "Delivery PoC":  "Ankita",
+                "Delivery PoC ID":  "163368",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "lokranjan.basker@cognizant.com",
+                "Adoption Level":  "Low",
+                "MWP Resource Count":  "3",
+                "Initial Sync-Up Status":  "Completed",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "a92a9880-fea2-4c26-8a54-209f6a6c0d5c",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "HISTOGENEX",
+                "Delivery PoC":  "Ankita",
+                "Delivery PoC ID":  "163368",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "No MWP resource in this a/c",
+                "Adoption Level":  "",
+                "MWP Resource Count":  "0",
+                "Initial Sync-Up Status":  "",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "b37c8774-8daf-4c86-b5b2-afacfa4d9195",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "NOVO NORDISK",
+                "Delivery PoC":  "Ankita",
+                "Delivery PoC ID":  "163368",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "No MWP resource in this a/c",
+                "Adoption Level":  "",
+                "MWP Resource Count":  "0",
+                "Initial Sync-Up Status":  "",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "ba77fd9c-6fd1-4069-a377-bf6019f958ce",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "MODERNA",
+                "Delivery PoC":  "Ankita",
+                "Delivery PoC ID":  "163368",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "No MWP resource in this a/c",
+                "Adoption Level":  "",
+                "MWP Resource Count":  "0",
+                "Initial Sync-Up Status":  "",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "941d7a26-4b64-41cb-a47b-bf044cc7d3b8",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "Olympus Surgical Technologies America",
+                "Delivery PoC":  "Ankita",
+                "Delivery PoC ID":  "163368",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "Mitta, Chandana ",
+                "Adoption Level":  "Low",
+                "MWP Resource Count":  "4",
+                "Initial Sync-Up Status":  "In Progress",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "f693b351-c60f-497f-a892-9151654cc7bd",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "EUROAPI",
+                "Delivery PoC":  "Chandra",
+                "Delivery PoC ID":  "2041555",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "No MWP resource in this a/c",
+                "Adoption Level":  "",
+                "MWP Resource Count":  "0",
+                "Initial Sync-Up Status":  "",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "0ddda0da-a357-4afb-abaa-7bee93b1a4d4",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "UCB",
+                "Delivery PoC":  "Chandra",
+                "Delivery PoC ID":  "2041555",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "No MWP resource in this a/c",
+                "Adoption Level":  "",
+                "MWP Resource Count":  "0",
+                "Initial Sync-Up Status":  "",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              },
+              {
+                "@odata.etag":  "",
+                "ItemInternalId":  "04d2cc6f-a96d-419d-baf7-582708275df9",
+                "Delivery Lead":  "Anup",
+                "Vertical":  "Healthcare \u0026 Life Sciences",
+                "Account":  "BioMarin Pharmaceuticals, Inc.",
+                "Delivery PoC":  "Chandra",
+                "Delivery PoC ID":  "2041555",
+                "AI Coach":  "Awnish  R",
+                "Acct Arch PoC":  "No MWP resource in this a/c",
+                "Adoption Level":  "",
+                "MWP Resource Count":  "0",
+                "Initial Sync-Up Status":  "",
+                "Adoption Score":  "",
+                "Tentative ETA":  "",
+                "Comments":  ""
+              }
+      ]
+    }
+    `;
+        const FALLBACK_DATA = JSON.parse(FALLBACK_JSON);
 
       const elements = {
         totalAccounts: document.getElementById('totalAccounts'),
@@ -349,6 +535,19 @@
       let allRows = [];
       let adoptionChart;
       let verticalChart;
+      const splashEl = document.getElementById('splash');
+      function showSplash(text) {
+        if (!splashEl) return;
+        if (text) {
+          const t = splashEl.querySelector('.splash-text');
+          if (t) t.textContent = text;
+        }
+        splashEl.classList.remove('hidden');
+      }
+      function hideSplash() {
+        if (!splashEl) return;
+        splashEl.classList.add('hidden');
+      }
 
       function normalizeRows(payload) {
         if (Array.isArray(payload)) return payload;
@@ -519,37 +718,50 @@
       }
 
       async function loadData() {
+        showSplash('Loading dashboard…');
         elements.tableNote.textContent = 'Loading…';
         const fetchFromRemote = async () => {
-          const response = await fetch(REMOTE_URL, { cache: 'no-store' });
-          if (!response.ok) throw new Error(`Remote response failed with ${response.status}`);
-          return response.json();
+          // First attempt: POST to the Power Automate invoke URL to trigger the flow and get data
+          try {
+            const postResp = await fetch(REMOTE_URL, { method: 'POST', cache: 'no-store', headers: { 'Content-Type': 'application/json' } });
+            if (postResp && postResp.ok) {
+              return postResp.json();
+            }
+          } catch (postErr) {
+            // network / CORS may block POST; we'll try GET next
+            console.debug('POST attempt failed', postErr);
+          }
+
+          // Second attempt: try GET as some endpoints accept GET
+          const getResp = await fetch(REMOTE_URL, { method: 'GET', cache: 'no-store' });
+          if (!getResp.ok) throw new Error(`Remote response failed with ${getResp.status}`);
+          return getResp.json();
         };
 
         try {
           const payload = await fetchFromRemote();
           allRows = normalizeRows(payload);
-          // successful fetch
+          elements.tableNote.textContent = '';
         } catch (error) {
-          console.error('Remote fetch failed', error);
-          // show friendly message in table area
-          elements.tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#64748b;">Remote fetch failed</td></tr>';
-          elements.tableNote.textContent = 'Remote fetch failed — open the console for details.';
-          return;
+          console.warn('Remote fetch failed — using embedded fallback', error);
+          allRows = normalizeRows(FALLBACK_DATA);
+          elements.tableNote.textContent = 'Using embedded fallback data (offline)';
         }
-        elements.tableNote.textContent = '';
         renderSummary(allRows);
         buildCharts(allRows);
         populateVerticalFilter(allRows);
         applyFilters();
+        // hide splash once rendering completes
+        hideSplash();
       }
 
-      [elements.searchInput, elements.adoptionFilter, elements.verticalFilter].forEach((element) => {
+      [elements.searchInput, elements.adoptionFilter, elements.verticalFilter, elements.resourceFilter].forEach((element) => {
         element.addEventListener('input', applyFilters);
         element.addEventListener('change', applyFilters);
       });
 
       elements.refreshBtn.addEventListener('click', () => {
+        showSplash('Refreshing…');
         loadData();
       });
 
