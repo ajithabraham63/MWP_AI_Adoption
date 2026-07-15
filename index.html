@@ -46,6 +46,7 @@
       }
 
       * { box-sizing: border-box; }
+      html, body { overflow-x: hidden; }
       body {
         margin: 0;
         font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -80,10 +81,10 @@
       main { max-width:1400px; margin:18px auto 48px; padding:6px 24px 28px; display:grid; gap:22px }
 
       .summary-grid { display:grid; gap:18px; grid-template-columns: repeat(4, minmax(0,1fr)); }
-      .kpi-card, .panel { background:var(--panel); border:1px solid var(--border); border-radius:14px; box-shadow:var(--soft-shadow); padding:18px }
-      .kpi-card { display:flex; flex-direction:column; justify-content:center }
+      .kpi-card, .panel { background:var(--panel); border:1px solid var(--border); border-radius:14px; box-shadow:var(--soft-shadow); padding:14px; box-sizing:border-box }
+      .kpi-card { display:flex; flex-direction:column; justify-content:center; min-height:84px; overflow:visible }
       .kpi-card .label { font-size:12px; color:var(--muted); font-weight:700 }
-      .kpi-card .value { font-size:34px; font-weight:800; margin-top:8px }
+      .kpi-card .value { font-size:28px; font-weight:800; margin-top:8px; line-height:1; padding:2px 0 }
       .kpi-card .hint { font-size:13px; color:var(--muted); margin-top:8px }
 
       .charts-grid { display:grid; gap:18px; grid-template-columns: 1.1fr 0.9fr }
@@ -139,7 +140,7 @@
       .tab-kpis { display:grid; gap:14px; grid-template-columns:repeat(4, minmax(0,1fr)); margin-bottom:20px }
       .tab-kpi { background:#f8fbff; border:1px solid var(--border); border-radius:12px; padding:14px }
       .tab-kpi .k-label { font-size:12px; color:var(--muted); font-weight:700 }
-      .tab-kpi .k-value { font-size:28px; font-weight:800; margin-top:6px }
+      .tab-kpi .k-value { font-size:23px; font-weight:800; margin-top:6px }
       .tab-kpi .k-value.small { font-size:14px; line-height:1.7; font-weight:700 }
 
       /* --- Active vertical context / Gartner maturity --- */
@@ -177,6 +178,8 @@
       /* ============ EXECUTIVE ENHANCEMENTS ============ */
       /* Premium KPI cards: icon, accent bar, hover lift, tooltip */
       .kpi-card { position:relative; transition:transform .2s ease, box-shadow .2s ease; }
+      .kpi-card .kpi-top { display:flex; align-items:center; gap:10px; min-height:22px }
+      .kpi-card .value { padding-left:6px; padding-right:6px; word-break:break-word }
       .kpi-card::before { content:''; position:absolute; left:0; top:0; height:4px; width:100%; border-radius:14px 14px 0 0; background:var(--brand); }
       .kpi-card.accent-green::before { background:#0f9d58 }
       .kpi-card.accent-amber::before { background:#f4b400 }
@@ -189,7 +192,7 @@
       .kpi-card.accent-amber .kpi-icon { background:#fff6e6; color:#b76a00 }
       .kpi-card.accent-red .kpi-icon { background:#fdeceb; color:#b92a25 }
       .kpi-card.accent-gray .kpi-icon { background:#eef1f5; color:#617085 }
-      .kpi-card .value { font-size:30px; margin-top:10px }
+      .kpi-card .value { font-size:24px; margin-top:10px; line-height:1.05 }
       .kpi-trend { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:800; margin-top:8px; color:#0f7f3a; background:#e8f7ee; padding:3px 9px; border-radius:999px; width:max-content }
 
       /* Hover tooltip (KPI quick insights) */
@@ -290,7 +293,7 @@
       .kpi-card::before { height:3px; }
       .kpi-top { gap:8px; }
       .kpi-card .label { font-size:11px; letter-spacing:.2px; line-height:1.2; }
-      .kpi-card .value { font-size:23px; margin-top:4px; line-height:1.1; }
+      .kpi-card .value { font-size:19px; margin-top:4px; line-height:1.05; }
       .kpi-card .hint { font-size:10.5px; margin-top:3px; color:var(--muted); }
       .kpi-icon { width:28px; height:28px; border-radius:8px; }
       .kpi-icon svg { width:16px; height:16px; }
@@ -343,9 +346,9 @@
       .m-section-title { font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin:0 0 10px; display:flex; align-items:center; gap:8px; }
       .m-section-title .ms-ico { width:24px; height:24px; border-radius:7px; background:#eef4ff; color:var(--brand); display:grid; place-items:center; }
       .m-cards { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-      .m-card { background:#f8fbff; border:1px solid var(--border); border-radius:12px; padding:11px 13px; }
+      .m-card { background:#f8fbff; border:1px solid var(--border); border-radius:12px; padding:14px; min-height:56px; box-sizing:border-box }
       .m-card .mc-label { font-size:10.5px; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.3px; }
-      .m-card .mc-value { font-size:14.5px; font-weight:700; margin-top:4px; word-break:break-word; }
+      .m-card .mc-value { font-size:15px; font-weight:700; margin-top:6px; word-break:break-word; }
       .m-badges { display:flex; flex-wrap:wrap; gap:8px; }
       .st-badge { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:800; padding:6px 12px; border-radius:999px; }
       .st-badge .sb-dot { width:8px; height:8px; border-radius:50%; background:currentColor; }
@@ -367,7 +370,7 @@
       .acct-toggle[aria-expanded="true"] .chev { transform:rotate(180deg); }
       .acct-body { margin-top:16px; animation:fadeSlide .3s ease; }
       /* Search field — full placeholder visible */
-      .toolbar #searchInput { min-width:290px; flex:1 1 290px; max-width:420px; font-size:13px; }
+      .toolbar #searchInput { min-width:320px; flex:1 1 320px; max-width:480px; font-size:13px; }
       .toolbar input, .toolbar select { font-size:13px; }
       .toolbar input::placeholder { font-size:12.5px; }
 
@@ -457,6 +460,33 @@
       .chat-send { width:42px; height:42px; flex:0 0 auto; border:0; border-radius:12px; cursor:pointer; background:linear-gradient(135deg,#165fcc,#2678de); color:#fff; display:grid; place-items:center; transition:transform .15s ease; }
       .chat-send:hover { transform:translateY(-1px) scale(1.03); }
       @media (max-width:520px){ .chat-panel { right:8px; bottom:8px; width:calc(100vw - 16px); height:calc(100vh - 16px); } .chat-fab { right:14px; bottom:70px; } }
+      /* ===== KPI / Summary compact overrides (final) ===== */
+      /* Global summary grid KPI adjustments */
+      .summary-grid .kpi-card { padding:8px 10px !important; min-height:60px !important; }
+      .summary-grid .kpi-card .value { font-size:28px !important; margin-top:6px !important; line-height:1 !important; padding:2px 0 !important; display:block }
+      .summary-grid .kpi-icon { width:30px; height:30px }
+      .summary-grid .kpi-icon svg { width:14px; height:14px }
+
+      /* Extra-grid / summary cards below tabs (Sync/ETA/Adoption) */
+      .extra-grid .kpi-card { padding:10px 12px !important; min-height:56px !important; }
+      .extra-grid .kpi-card .label { font-size:12px !important }
+      .extra-grid .kpi-card .status-line { margin-top:8px }
+      .extra-grid .kpi-card .status-line .count { font-size:18px !important; }
+
+      /* m-cards used inside modals/summary: slightly smaller */
+      .m-card { padding:8px 10px !important; min-height:44px !important }
+      .m-card .mc-value { font-size:13px !important; margin-top:4px !important }
+
+      /* Tighter grid spacing */
+      .extra-grid { gap:10px !important }
+      .summary-grid { gap:10px !important }
+
+      @media (max-width:640px) {
+        .summary-grid .kpi-card { min-height:52px !important; padding:8px 8px !important }
+        .summary-grid .kpi-card .value { font-size:24px !important }
+        .extra-grid .kpi-card { min-height:50px !important }
+        .m-card { min-height:40px !important }
+      }
     </style>
   </head>
   <body>
@@ -666,7 +696,7 @@
         </div>
         <div class="acct-body" id="acctBody" hidden>
         <div class="toolbar">
-          <input id="searchInput" type="text" placeholder="Search account, vertical, lead, coach…" />
+          <input id="searchInput" type="text" placeholder="Search account, vertical, lead, coach..." />
           <select id="adoptionFilter">
             <option value="">All adoption levels</option>
             <option value="High">High</option>
@@ -754,10 +784,7 @@
       </div>
     </div>
 
-    <!-- Back to top -->
-    <button class="to-top" id="toTop" aria-label="Back to top" title="Back to top">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
-    </button>
+    <!-- Back to top removed (only chatbot fab remains) -->
 
     <script>
         // Primary remote Power Automate URL — browser will attempt to fetch this.
@@ -1599,13 +1626,31 @@
         setRefreshedNow();
       }
 
+        // ---- Manual refresh helper (shows loading popup, clears chatbot, animates KPI/cards then reloads data) ----
+        async function doRefresh() {
+          const splash = document.getElementById('splash');
+          if (splash) splash.classList.remove('hidden');
+
+          // clear chatbot context (DOM-level reset)
+          const chatMsgs = document.getElementById('chatMsgs'); if (chatMsgs) chatMsgs.innerHTML = '';
+          const chatChips = document.getElementById('chatChips'); if (chatChips) chatChips.innerHTML = '';
+          const chatInput = document.getElementById('chatInput'); if (chatInput) chatInput.value = '';
+
+          // smooth visual refresh for KPIs, summary and charts
+          ['.summary-grid', '.extra-grid', '#insightsBar', '#tabsBar'].forEach((sel) => { const el = document.querySelector(sel); if (el) flash(el); });
+
+          try { await loadData(); } catch (err) { console.warn('doRefresh loadData failed', err); }
+          // leave splash visible briefly for a smooth UX
+          setTimeout(hideBoot, 700);
+        }
+
       // ---- Event wiring ----
       [elements.searchInput, elements.adoptionFilter, elements.verticalFilter, elements.resourceFilter].forEach((element) => {
         element.addEventListener('input', applyFilters);
         element.addEventListener('change', applyFilters);
       });
 
-      elements.refreshBtn.addEventListener('click', loadData);
+        elements.refreshBtn.addEventListener('click', doRefresh);
       document.getElementById('exportCsvBtn').addEventListener('click', exportCSV);
       document.getElementById('exportXlsBtn').addEventListener('click', exportExcel);
 
@@ -1613,9 +1658,7 @@
       document.getElementById('detailModal').addEventListener('click', (e) => { if (e.target.id === 'detailModal') closeDetail(); });
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDetail(); });
 
-      const toTopBtn = document.getElementById('toTop');
-      window.addEventListener('scroll', () => { toTopBtn.classList.toggle('show', window.scrollY > 320); });
-      toTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      // Back-to-top removed per design (only chatbot fab retained)
 
       // ---- Export helpers ----
       const EXPORT_COLS = ['Account', 'Vertical', 'Delivery Lead', 'MWP Resource Count', 'Adoption Level', 'Initial Sync-Up Status', 'Acct Arch PoC', 'Tracker in place', 'Tentative ETA', 'AI Coach'];
