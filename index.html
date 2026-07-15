@@ -45,7 +45,8 @@
       }
 
       .brand { display: flex; align-items: center; gap: 14px; }
-      .brand .logo { width: 56px; height: 56px; background: transparent; border-radius:12px; display:grid; place-items:center; box-shadow:none; border:0 }
+      .brand .logo { width: 56px; height: 56px; background: rgba(255,255,255,0.12); border-radius:12px; display:grid; place-items:center; box-shadow:inset 0 2px 8px rgba(0,0,0,0.1); border:1px solid rgba(255,255,255,0.18); transition: background 0.2s ease }
+      .brand .logo:hover { background: rgba(255,255,255,0.18) }
       .brand .org { font-weight:800; margin:0; font-size:18px; color:#fff; display:inline-block }
       .brand h1 { margin:0 0 0 8px; font-size:20px; font-weight:700; color: #fff }
       .brand .org-sep { margin:0 6px; color:rgba(255,255,255,0.9); font-weight:700 }
@@ -96,7 +97,7 @@
       .splash-text { font-size:15px; font-weight:700; color:#ffffff; margin-top:6px }
       .splash-spinner { width:40px; height:40px; border-radius:50%; border:4px solid rgba(255,255,255,0.14); border-top-color: rgba(255,255,255,0.95); animation:spin 1s linear infinite; margin-top:6px }
         /* Floating top-left logo */
-        .floating-logo { position:fixed; left:14px; top:14px; z-index:1300; width:56px; height:56px; display:grid; place-items:center; background:#082044; border-radius:12px; border:0; box-shadow:0 8px 20px rgba(3,10,30,0.45) }
+        .floating-logo { position:fixed; left:14px; top:14px; z-index:1300; width:56px; height:56px; display:none; place-items:center; background:#082044; border-radius:12px; border:0; box-shadow:0 8px 20px rgba(3,10,30,0.45) }
         .site-footer { max-width:1400px; margin:10px auto 40px; padding:14px 24px; display:flex; gap:12px; align-items:center; justify-content:space-between; color:var(--muted); font-size:13px }
         .site-footer .footer-left { display:flex; gap:12px; align-items:center }
         .site-footer .footer-left .logo-small { width:36px; height:36px; display:grid; place-items:center; }
