@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MWP AI Adoption Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+      :root {
+        --bg: #f3f7fb;
+        --panel: #ffffff;
+        --border: #dce4ee;
+        --text: #0f172a;
+        --muted: #5f6b7a;
+        --brand: #1a73e8;
+        --brand-2: #0f9d58;
+        --amber: #f4b400;
+        --red: #db4437;
+        --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        color: var(--text);
+        background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      }
+
+      .hero {
+        background: linear-gradient(135deg, #1a73e8 0%, #0f9d58 55%, #f4b400 100%);
+        color: white;
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand .logo {
+        width: 54px;
+        height: 54px;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.32);
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        backdrop-filter: blur(8px);
+      }
+
+      .brand svg { width: 36px; height: 36px; }
+      .brand h1 { margin: 0; font-size: 24px; }
+      .brand p { margin: 3px 0 0; opacity: 0.9; font-size: 13px; }
+
+      .meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        backdrop-filter: blur(8px);
+      }
+
+      .btn {
+        border: 0;
+        border-radius: 999px;
+        padding: 8px 14px;
+        background: white;
+        color: var(--brand);
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .btn:hover { transform: translateY(-1px); }
+
+      main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 24px;
+        display: grid;
+        gap: 18px;
+      }
+
+      .summary-grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+
+      .kpi-card, .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 16px;
+      }
+
+      .kpi-card .label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .kpi-card .value {
+        display: block;
+        font-size: 28px;
+        font-weight: 700;
+        margin-top: 6px;
+      }
+
+      .kpi-card .hint {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 6px;
+      }
+
+      .charts-grid {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: 1.1fr 0.9fr;
+      }
+
+      .panel h3 {
+        margin: 0 0 10px;
+        font-size: 15px;
+      }
+
+      .panel .canvas-wrap {
+        position: relative;
+        height: 320px;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+
+      .toolbar input, .toolbar select {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 8px 10px;
+        font: inherit;
+        min-width: 180px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 760px;
+      }
+
+      th, td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        font-size: 13px;
+      }
+
+      th {
+        background: #f9fbfd;
+        color: var(--muted);
+        font-weight: 700;
+        position: sticky;
+        top: 0;
+      }
+
+      tr:hover td { background: #fbfdff; }
+
+      .pill-badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .pill-badge.low { background: #fce8e6; color: #a50e0e; }
+      .pill-badge.moderate { background: #fef7e0; color: #b06000; }
+      .pill-badge.high { background: #e6f4ea; color: #137333; }
+      .pill-badge.empty { background: #eef2f7; color: #4b5563; }
+
+      .status { font-size: 12px; color: var(--muted); }
+      .note {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+
+      @media (max-width: 1100px) {
+        .summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .charts-grid { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 640px) {
+        .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .hero { flex-direction: column; align-items: flex-start; }
+        .brand { width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="brand">
+        <div class="logo" aria-label="Cognizant logo">
+          <img src="https://www.cognizant.com/content/dam/cognizant-com/global/images/cognizant-logo-blue.svg" alt="Cognizant logo" style="height:36px;object-fit:contain;" />
+        </div>
+        <div>
+          <h1>MWP AI Adoption Tracker</h1>
+        </div>
+      </div>
+      <div class="meta">
+        <button class="btn icon-btn" id="refreshBtn" aria-label="Refresh">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M21 12a9 9 0 1 0-3.2 6.8L21 21v-4.2A8.9 8.9 0 0 0 21 12z" stroke="#1a73e8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 3v6h-6" stroke="#1a73e8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="summary-grid">
+        <div class="kpi-card">
+          <span class="label">Total Accounts</span>
+          <span class="value" id="totalAccounts">—</span>
+          <div class="hint">Accounts captured from the Excel sheet</div>
+        </div>
+        <div class="kpi-card">
+          <span class="label">With MWP Resources</span>
+          <span class="value" id="accountsWithResources">—</span>
+          <div class="hint">Accounts with at least 1 resource</div>
+        </div>
+        <div class="kpi-card">
+          <span class="label">Total Resources</span>
+          <span class="value" id="totalResources">—</span>
+          <div class="hint">Combined MWP resource count</div>
+        </div>
+        <div class="kpi-card">
+          <span class="label">High Adoption</span>
+          <span class="value" id="highAdoption">—</span>
+          <div class="hint">Marked as High</div>
+        </div>
+        <div class="kpi-card">
+          <span class="label">Moderate Adoption</span>
+          <span class="value" id="moderateAdoption">—</span>
+          <div class="hint">Marked as Moderate</div>
+        </div>
+        <div class="kpi-card">
+          <span class="label">Completed Syncs</span>
+          <span class="value" id="completedSyncs">—</span>
+          <div class="hint">Initial sync up completed</div>
+        </div>
+      </section>
+
+      <section class="charts-grid">
+        <div class="panel">
+          <h3>Adoption level mix</h3>
+          <div class="canvas-wrap"><canvas id="adoptionChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <h3>Vertical mix</h3>
+          <div class="canvas-wrap"><canvas id="verticalChart"></canvas></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="toolbar">
+          <input id="searchInput" type="text" placeholder="Search account, vertical, or lead" />
+          <select id="adoptionFilter">
+            <option value="">All adoption levels</option>
+            <option value="High">High</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Low">Low</option>
+            <option value="Unassigned">Unassigned</option>
+          </select>
+          <select id="verticalFilter">
+            <option value="">All verticals</option>
+          </select>
+          <input id="resourceFilter" type="number" min="0" placeholder="Min MWP resources" style="min-width:140px;" />
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Account</th>
+                <th>Vertical</th>
+                <th>Delivery Lead</th>
+                <th>Adoption Level</th>
+                <th>MWP Resource Count</th>
+                <th>Initial Sync-Up Status</th>
+                <th>AI Coach</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <div class="note" id="tableNote">Loading rows…</div>
+      </section>
+    </main>
+
+    <script>
+      const REMOTE_URL = 'https://defaultde08c40719b9427d9fe8edf254300c.a7.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/491615548ef84101a7531c0338834d0b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MykhtoyoloODW1Ju0fZqNO6EHCI_30noIzhz8mNoJo8';
+
+      const elements = {
+        totalAccounts: document.getElementById('totalAccounts'),
+        accountsWithResources: document.getElementById('accountsWithResources'),
+        totalResources: document.getElementById('totalResources'),
+        highAdoption: document.getElementById('highAdoption'),
+        moderateAdoption: document.getElementById('moderateAdoption'),
+        completedSyncs: document.getElementById('completedSyncs'),
+        
+        tableBody: document.getElementById('tableBody'),
+        tableNote: document.getElementById('tableNote'),
+        searchInput: document.getElementById('searchInput'),
+        adoptionFilter: document.getElementById('adoptionFilter'),
+        verticalFilter: document.getElementById('verticalFilter'),
+        resourceFilter: document.getElementById('resourceFilter'),
+        refreshBtn: document.getElementById('refreshBtn')
+      };
+
+      let allRows = [];
+      let adoptionChart;
+      let verticalChart;
+
+      function normalizeRows(payload) {
+        if (Array.isArray(payload)) return payload;
+        if (payload && Array.isArray(payload.value)) return payload.value;
+        if (payload && Array.isArray(payload.rows)) return payload.rows;
+        if (payload && typeof payload === 'object') {
+          const keys = Object.keys(payload);
+          for (const key of keys) {
+            const value = payload[key];
+            if (Array.isArray(value)) {
+              return normalizeRows(value);
+            }
+          }
+        }
+        if (typeof payload === 'string') {
+          try {
+            return normalizeRows(JSON.parse(payload));
+          } catch (error) {
+            return [];
+          }
+        }
+        return [];
+      }
+
+      function getValue(row, key) {
+        if (!row) return '';
+        return row[key] ?? row[key.toLowerCase()] ?? row[key.replace(/\s+/g, ' ').trim()] ?? '';
+      }
+
+      function parseNumber(value) {
+        const n = Number(String(value ?? '').replace(/,/g, '').trim());
+        return Number.isFinite(n) ? n : 0;
+      }
+
+      function normalizeLevel(value) {
+        const level = String(value ?? '').trim();
+        if (!level) return 'Unassigned';
+        return level;
+      }
+
+      function renderSummary(rows) {
+        const totalAccounts = rows.length;
+        const accountsWithResources = rows.filter((row) => parseNumber(getValue(row, 'MWP Resource Count')) > 0).length;
+        const totalResources = rows.reduce((sum, row) => sum + parseNumber(getValue(row, 'MWP Resource Count')), 0);
+        const highAdoption = rows.filter((row) => normalizeLevel(getValue(row, 'Adoption Level')) === 'High').length;
+        const moderateAdoption = rows.filter((row) => normalizeLevel(getValue(row, 'Adoption Level')) === 'Moderate').length;
+        const completedSyncs = rows.filter((row) => String(getValue(row, 'Initial Sync-Up Status') || '').toLowerCase().includes('completed')).length;
+
+        elements.totalAccounts.textContent = totalAccounts.toLocaleString();
+        elements.accountsWithResources.textContent = accountsWithResources.toLocaleString();
+        elements.totalResources.textContent = totalResources.toLocaleString();
+        elements.highAdoption.textContent = highAdoption.toLocaleString();
+        elements.moderateAdoption.textContent = moderateAdoption.toLocaleString();
+        elements.completedSyncs.textContent = completedSyncs.toLocaleString();
+      }
+
+      function buildCharts(rows) {
+        const adoptionCounts = { High: 0, Moderate: 0, Low: 0, Unassigned: 0 };
+        rows.forEach((row) => {
+          const level = normalizeLevel(getValue(row, 'Adoption Level'));
+          if (adoptionCounts[level] !== undefined) adoptionCounts[level] += 1;
+          else adoptionCounts.Unassigned += 1;
+        });
+
+        const adoptionData = Object.entries(adoptionCounts).filter(([, value]) => value > 0);
+        if (adoptionChart) adoptionChart.destroy();
+        adoptionChart = new Chart(document.getElementById('adoptionChart'), {
+          type: 'bar',
+          data: {
+            labels: adoptionData.map(([label]) => label),
+            datasets: [{
+              label: 'Accounts',
+              data: adoptionData.map(([, value]) => value),
+              backgroundColor: ['#0f9d58', '#f4b400', '#db4437', '#9aa0a6']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, ticks: { precision: 0 } }
+            }
+          }
+        });
+
+        const verticalCounts = {};
+        rows.forEach((row) => {
+          const vertical = String(getValue(row, 'Vertical') || 'Unknown').trim();
+          verticalCounts[vertical] = (verticalCounts[vertical] || 0) + 1;
+        });
+
+        const verticalEntries = Object.entries(verticalCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+        if (verticalChart) verticalChart.destroy();
+        verticalChart = new Chart(document.getElementById('verticalChart'), {
+          type: 'doughnut',
+          data: {
+            labels: verticalEntries.map(([label]) => label),
+            datasets: [{
+              data: verticalEntries.map(([, value]) => value),
+              backgroundColor: ['#1a73e8', '#0f9d58', '#f4b400', '#db4437', '#6b7280', '#4f46e5', '#14b8a6', '#fb923c']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+          }
+        });
+      }
+
+      function populateVerticalFilter(rows) {
+        const values = [...new Set(rows.map((row) => String(getValue(row, 'Vertical') || '').trim()).filter(Boolean))].sort();
+        const current = elements.verticalFilter.value;
+        elements.verticalFilter.innerHTML = '<option value="">All verticals</option>' + values.map((value) => `<option value="${value}">${value}</option>`).join('');
+        elements.verticalFilter.value = current || '';
+      }
+
+      function renderTable(rows) {
+        if (!rows.length) {
+          elements.tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#64748b;">No matching rows</td></tr>';
+          elements.tableNote.textContent = 'No rows matched your current filters.';
+          return;
+        }
+
+        const rowsMarkup = rows.map((row) => {
+          const level = normalizeLevel(getValue(row, 'Adoption Level'));
+          const badgeClass = level.toLowerCase();
+          const resourceCount = parseNumber(getValue(row, 'MWP Resource Count'));
+          return `
+            <tr>
+              <td>${String(getValue(row, 'Account') || '').trim() || '—'}</td>
+              <td>${String(getValue(row, 'Vertical') || '').trim() || '—'}</td>
+              <td>${String(getValue(row, 'Delivery Lead') || '').trim() || '—'}</td>
+              <td><span class="pill-badge ${badgeClass === 'high' || badgeClass === 'moderate' || badgeClass === 'low' ? badgeClass : 'empty'}">${level || 'Unassigned'}</span></td>
+              <td>${resourceCount.toLocaleString()}</td>
+              <td>${String(getValue(row, 'Initial Sync-Up Status') || '').trim() || '—'}</td>
+              <td>${String(getValue(row, 'AI Coach') || '').trim() || '—'}</td>
+            </tr>`;
+        }).join('');
+
+        elements.tableBody.innerHTML = rowsMarkup;
+        elements.tableNote.textContent = `${rows.length} rows shown`;
+      }
+
+      function applyFilters() {
+        const searchText = elements.searchInput.value.trim().toLowerCase();
+        const adoption = elements.adoptionFilter.value;
+        const vertical = elements.verticalFilter.value;
+        const minResources = Number(elements.resourceFilter.value) || 0;
+
+        const filtered = allRows.filter((row) => {
+          const haystack = [
+            getValue(row, 'Account'),
+            getValue(row, 'Vertical'),
+            getValue(row, 'Delivery Lead'),
+            getValue(row, 'AI Coach')
+          ].join(' ').toLowerCase();
+
+          const matchesSearch = !searchText || haystack.includes(searchText);
+          const matchesAdoption = !adoption || normalizeLevel(getValue(row, 'Adoption Level')) === adoption;
+          const matchesVertical = !vertical || String(getValue(row, 'Vertical') || '').trim() === vertical;
+          const matchesResource = (parseNumber(getValue(row, 'MWP Resource Count')) >= minResources);
+          return matchesSearch && matchesAdoption && matchesVertical && matchesResource;
+        });
+
+        renderTable(filtered);
+      }
+
+      async function loadData() {
+        elements.tableNote.textContent = 'Loading…';
+        const fetchFromRemote = async () => {
+          const response = await fetch(REMOTE_URL, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`Remote response failed with ${response.status}`);
+          return response.json();
+        };
+
+        try {
+          const payload = await fetchFromRemote();
+          allRows = normalizeRows(payload);
+          // successful fetch
+        } catch (error) {
+          console.error('Remote fetch failed', error);
+          // show friendly message in table area
+          elements.tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#64748b;">Remote fetch failed</td></tr>';
+          elements.tableNote.textContent = 'Remote fetch failed — open the console for details.';
+          return;
+        }
+        elements.tableNote.textContent = '';
+        renderSummary(allRows);
+        buildCharts(allRows);
+        populateVerticalFilter(allRows);
+        applyFilters();
+      }
+
+      [elements.searchInput, elements.adoptionFilter, elements.verticalFilter].forEach((element) => {
+        element.addEventListener('input', applyFilters);
+        element.addEventListener('change', applyFilters);
+      });
+
+      elements.refreshBtn.addEventListener('click', () => {
+        loadData();
+      });
+
+      loadData();
+    </script>
+  </body>
+</html>
