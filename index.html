@@ -1294,6 +1294,29 @@
         // Spread points slightly to reduce exact overlap
         points.forEach((p, k) => { p.x += ((k % 5) - 2) * 0.3; p.y += ((k % 3) - 1) * 0.3; });
 
+        // Relaxation pass: separate overlapping bubbles so labels are readable
+        const rUnit = points.map((p) => (p.r / 4) + 1.6);
+        for (let it = 0; it < 120; it++) {
+          let moved = false;
+          for (let i = 0; i < points.length; i++) {
+            for (let j = i + 1; j < points.length; j++) {
+              let dx = points[j].x - points[i].x, dy = points[j].y - points[i].y;
+              let d = Math.hypot(dx, dy) || 0.001;
+              let min = rUnit[i] + rUnit[j];
+              if (d < min) {
+                const push = (min - d) / (2 * d);
+                const px = dx * push, py = dy * push;
+                points[i].x -= px; points[i].y -= py;
+                points[j].x += px; points[j].y += py;
+                moved = true;
+              }
+            }
+          }
+          // Keep points inside visual bounds
+          points.forEach((p) => { p.x = Math.min(95, Math.max(5, p.x)); p.y = Math.min(93, Math.max(7, p.y)); });
+          if (!moved) break;
+        }
+
         if (maturityChart) maturityChart.destroy();
         maturityChart = new Chart(document.getElementById('maturityChart'), {
           type: 'bubble',
