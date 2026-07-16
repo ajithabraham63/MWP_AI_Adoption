@@ -360,14 +360,15 @@
       /* ============ FINAL POLISH PASS — collapsible, insights, chatbot ============ */
       /* Account Details collapsible header */
       .acct-head { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
-      .acct-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+      .acct-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-right: 94px; }
+      @media (max-width: 900px) { .acct-actions { margin-right: 0; } }
       .hdr-btn.ghost-btn { background:#eef4ff; color:var(--brand); border:1px solid #dbe7ff; }
       .hdr-btn.ghost-btn:hover { background:#e0ecff; transform:translateY(-1px); }
-      .acct-toggle { display:inline-flex; align-items:center; gap:7px; border:0; cursor:pointer; border-radius:10px; padding:9px 15px;
-        background:linear-gradient(135deg,#165fcc,#0f9d58); color:#fff; font-weight:800; font-size:13px; box-shadow:0 6px 16px rgba(22,95,204,.28); transition:transform .15s ease, box-shadow .15s ease; }
-      .acct-toggle:hover { transform:translateY(-1px); box-shadow:0 10px 22px rgba(22,95,204,.34); }
-      .acct-toggle .chev { transition:transform .25s ease; }
-      .acct-toggle[aria-expanded="true"] .chev { transform:rotate(180deg); }
+      #acctHeader { user-select:none; }
+      #acctHeader:hover { opacity:0.8; }
+      #acctHeader:focus-visible { outline:2px solid var(--brand); outline-offset:2px; border-radius:4px; }
+      .acct-chev { transition:transform 0.25s ease; }
+      #acctHeader[aria-expanded="true"] .acct-chev { transform:rotate(180deg); }
       .acct-body { margin-top:16px; animation:fadeSlide .3s ease; }
       /* Search field — full placeholder visible */
       .toolbar #searchInput { min-width:320px; flex:1 1 320px; max-width:480px; font-size:13px; }
@@ -450,10 +451,12 @@
       .chat-typing span { width:7px; height:7px; border-radius:50%; background:#9db4d4; animation:blink 1.2s infinite; }
       .chat-typing span:nth-child(2){ animation-delay:.2s } .chat-typing span:nth-child(3){ animation-delay:.4s }
       @keyframes blink { 0%,60%,100%{ opacity:.3 } 30%{ opacity:1 } }
-      .chat-chips { display:flex; gap:7px; overflow-x:auto; padding:8px 14px; flex:0 0 auto; scrollbar-width:thin; border-top:1px solid var(--border); }
+      .chat-chips { display:flex; flex-wrap:wrap; align-items:flex-start; gap:10px; overflow:auto; max-height:220px; padding:10px 14px; flex:0 0 auto; scrollbar-width:thin; border-top:1px solid var(--border); }
       .chat-chips::-webkit-scrollbar { height:6px } .chat-chips::-webkit-scrollbar-thumb { background:#d7e2ef; border-radius:999px }
-      .chat-chip { flex:0 0 auto; white-space:nowrap; border:1px solid #dbe7ff; background:#eef4ff; color:var(--brand); font-weight:700; font-size:11.5px; padding:6px 12px; border-radius:999px; cursor:pointer; transition:all .14s ease; }
-      .chat-chip:hover { background:var(--brand); color:#fff; border-color:var(--brand); }
+      .chat-chip-group { display:flex; flex-wrap:wrap; gap:8px; width:100%; }
+      .chat-chip-label { width:100%; font-size:10.5px; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; color:rgba(22,95,204,0.88); margin-bottom:4px; }
+      .chat-chip { flex:0 0 auto; white-space:nowrap; border:1px solid rgba(22,95,204,0.32); background:#eef4ff; color:var(--brand); font-weight:700; font-size:11.5px; padding:6px 12px; border-radius:999px; cursor:pointer; transition:all .14s ease; }
+      .chat-chip:hover { background:var(--brand); color:#fff; border-color:var(--brand); transform:translateY(-1px); }
       .chat-input-row { display:flex; gap:8px; padding:12px 14px; border-top:1px solid var(--border); background:rgba(255,255,255,.5); flex:0 0 auto; }
       .chat-input-row input { flex:1 1 auto; min-width:0; border:1px solid var(--border); border-radius:12px; padding:10px 13px; font:inherit; font-size:13px; background:#fff; }
       .chat-input-row input:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(22,95,204,.12); }
@@ -551,7 +554,7 @@
         <div class="kpi-card" data-tip="Every account tracked in the dataset">
           <div class="kpi-top">
             <span class="kpi-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-            <span class="label">Total Projects</span>
+            <span class="label">Total Accounts</span>
           </div>
           <span class="value" id="kpiTotal">—</span>
           <div class="hint">All accounts in scope</div>
@@ -559,7 +562,7 @@
         <div class="kpi-card accent-green" data-tip="Accounts with at least 1 MWP resource assigned">
           <div class="kpi-top">
             <span class="kpi-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg></span>
-            <span class="label">Active Projects</span>
+            <span class="label">Active Accounts</span>
           </div>
           <span class="value" id="kpiActive">—</span>
           <div class="hint">Resource Count &gt; 0</div>
@@ -567,7 +570,7 @@
         <div class="kpi-card accent-gray" data-tip="Accounts with no MWP resource assigned yet">
           <div class="kpi-top">
             <span class="kpi-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></span>
-            <span class="label">Inactive Projects</span>
+            <span class="label">Inactive Accounts</span>
           </div>
           <span class="value" id="kpiInactive">—</span>
           <div class="hint">Resource Count = 0</div>
@@ -645,6 +648,7 @@
             <div class="mini-badge"><span class="chip high">High</span> <span class="b-count" id="sumHigh">0</span></div>
             <div class="mini-badge"><span class="chip moderate">Moderate</span> <span class="b-count" id="sumModerate">0</span></div>
             <div class="mini-badge"><span class="chip low">Low</span> <span class="b-count" id="sumLow">0</span></div>
+            <div class="mini-badge"><span class="chip gray">Not Yet Identified</span> <span class="b-count" id="sumNI">0</span></div>
           </div>
         </div>
       </section>
@@ -653,7 +657,7 @@
 
       <section class="charts-grid">
         <div class="panel" id="maturityPanel">
-          <h3><span class="s-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><circle cx="9" cy="9" r="2.5"/><circle cx="16" cy="14" r="2.5"/></svg></span>Adoption Maturity Quadrant</h3>
+          <h3><span class="s-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><circle cx="9" cy="9" r="2.5"/><circle cx="16" cy="14" r="2.5"/></svg></span>Account-level AI Adoption Maturity Quadrant</h3>
           <div class="quad-legend" id="maturityStats"></div>
           <div class="canvas-wrap" style="height:420px"><canvas id="maturityChart"></canvas></div>
         </div>
@@ -677,7 +681,10 @@
 
       <section class="panel" id="accountPanel">
         <div class="acct-head">
-          <h3 style="margin:0;"><span class="s-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"/><path d="M3 9h18M3 15h18M9 3v18"/></svg></span>Account Details</h3>
+          <h3 style="margin:0; display:flex; align-items:center; gap:10px; cursor:pointer; flex:1;" id="acctHeader" role="button" tabindex="0" aria-expanded="false" aria-controls="acctBody">
+            <svg class="acct-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transition:transform 0.25s ease;"><path d="M6 9l6 6 6-6"/></svg>
+            <span class="s-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"/><path d="M3 9h18M3 15h18M9 3v18"/></svg></span>Account Details
+          </h3>
           <div class="acct-actions">
             <button class="hdr-btn ghost-btn" id="exportCsvBtn" title="Export current table as CSV">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
@@ -686,10 +693,6 @@
             <button class="hdr-btn ghost-btn" id="exportXlsBtn" title="Export current table for Excel">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13l6 6M15 13l-6 6"/></svg>
               Excel
-            </button>
-            <button class="acct-toggle" id="acctToggle" aria-expanded="false" aria-controls="acctBody">
-              <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-              <span class="acct-toggle-text">Expand Table</span>
             </button>
           </div>
         </div>
@@ -1041,6 +1044,34 @@
       let bootDone = false;
       function hideBoot() { const b = document.getElementById('splash'); if (b) b.classList.add('hidden'); }
 
+      const rowKeyCache = new WeakMap();
+      function normalizeKey(key) {
+        return String(key ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
+      }
+      function buildKeyMap(row) {
+        if (!row || typeof row !== 'object') return {};
+        if (rowKeyCache.has(row)) return rowKeyCache.get(row);
+        const map = {};
+        Object.keys(row).forEach((k) => {
+          map[normalizeKey(k)] = k;
+        });
+        rowKeyCache.set(row, map);
+        return map;
+      }
+      function findBestTrackerKey(row) {
+        const map = buildKeyMap(row);
+        const keys = Object.keys(map);
+        const trackerCandidates = keys.filter((k) => k.includes('tracker'));
+        if (!trackerCandidates.length) return '';
+        const preferred = trackerCandidates.find((k) => [
+          'tracker in place',
+          'tracker available',
+          'tracker status',
+          'tracker preparedness',
+          'tracker state'
+        ].includes(k));
+        return preferred || trackerCandidates[0];
+      }
       function normalizeRows(payload) {
         if (Array.isArray(payload)) return payload;
         if (payload && Array.isArray(payload.value)) return payload.value;
@@ -1064,17 +1095,12 @@
         return [];
       }
 
-      function normalizeKey(key) {
-        return String(key ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
-      }
       function getValue(row, key) {
         if (!row) return '';
-        const direct = row[key] ?? row[String(key).toLowerCase()] ?? row[String(key).trim()];
-        if (direct !== undefined) return direct;
-        const target = normalizeKey(key);
-        for (const prop of Object.keys(row)) {
-          if (normalizeKey(prop) === target) return row[prop];
-        }
+        if (key in row) return row[key];
+        const map = buildKeyMap(row);
+        const normalized = normalizeKey(key);
+        if (map[normalized]) return row[map[normalized]];
         return '';
       }
 
@@ -1090,10 +1116,14 @@
       }
 
       // A "Tracker in place" cell counts when it holds a meaningful/affirmative value.
+      // Rules: count when NOT blank, but explicitly exclude known negative values.
       function hasTracker(value) {
         const s = String(value ?? '').trim().toLowerCase();
-        if (!s) return false;
-        return !['no', 'n/a', 'na', 'none', 'nil', '-', 'not in place', 'not available', 'pending', 'tbd'].includes(s);
+        if (!s) return false; // blank
+        if (s === 'null' || s === 'undefined') return false;
+        const negatives = new Set(['no', 'n', 'na', 'n/a', 'not available', 'not started', '-', 'false', '0']);
+        if (negatives.has(s)) return false;
+        return true;
       }
 
       // Top KPI cards (driven by the toolbar-filtered dataset).
@@ -1103,9 +1133,15 @@
         const inactive = total - active;
         const pocNot = rows.filter((r) => parseNumber(getValue(r, 'MWP Resource Count')) > 0 && String(getValue(r, 'Acct Arch PoC') || '').trim() === '').length;
         const completed = rows.filter((r) => normalizeSync(getValue(r, 'Initial Sync-Up Status')) === 'Completed').length;
-        const tracker = rows.filter((r) => hasTracker(getValue(r, 'Tracker in place'))).length;
+        const trackerColumn = rows.reduce((found, r) => found || findBestTrackerKey(r), '') || 'Tracker in place';
+        const trackerValues = rows.map((r) => getValue(r, trackerColumn));
+        const tracker = rows.filter((r) => hasTracker(getValue(r, trackerColumn))).length;
         const high = rows.filter((r) => adoptionBucket(getValue(r, 'Adoption Level')) === 'High').length;
         const moderate = rows.filter((r) => adoptionBucket(getValue(r, 'Adoption Level')) === 'Moderate').length;
+
+        console.log('Tracker Column:', trackerColumn);
+        console.log('Tracker Values Found:', trackerValues.filter((v, i, arr) => arr.indexOf(v) === i).map((v) => v === null ? null : String(v)));
+        console.log('Prepared Accounts:', tracker);
 
         setText('kpiTotal', total);
         setText('kpiActive', active);
@@ -1165,18 +1201,15 @@
         { key: 'Moderate', color: '#f4b400' },
         { key: 'Low', color: '#db4437' }
       ];
-      const PALETTE = ['#165fcc', '#0f9d58', '#f4b400', '#db4437', '#7c3aed', '#0891b2', '#db2777', '#ea580c', '#4b5563', '#0d9488'];
+      const PALETTE = ['#165fcc', '#0f9d58', '#f4b400', '#7c3aed', '#0891b2', '#ea580c', '#4b5563', '#0d9488'];
 
       function hexA(hex, a) {
         const h = hex.replace('#', '');
         const r = parseInt(h.substring(0, 2), 16), g = parseInt(h.substring(2, 4), 16), b = parseInt(h.substring(4, 6), 16);
         return `rgba(${r},${g},${b},${a})`;
       }
-      function abbrev(v, maxLen = 2) {
-        const parts = String(v ?? '').split(/[\s&/-]+/).filter(Boolean);
-        if (!parts.length) return '';
-        if (parts.length === 1) return parts[0].slice(0, maxLen).toUpperCase();
-        return parts.map((w) => w[0]).join('').slice(0, maxLen).toUpperCase();
+      function abbrev(v) {
+        return v.split(/[\s&/-]+/).filter(Boolean).map((w) => w[0]).join('').slice(0, 4).toUpperCase();
       }
       // Aggregate a rowset into per-vertical stats.
       function verticalStats(rows) {
@@ -1206,9 +1239,9 @@
           const mx = x.getPixelForValue(50), my = y.getPixelForValue(50);
           ctx.save();
           ctx.fillStyle = 'rgba(15,157,88,0.06)';  ctx.fillRect(mx, top, right - mx, my - top);      // TR Leaders
-          ctx.fillStyle = 'rgba(22,95,204,0.055)'; ctx.fillRect(left, top, mx - left, my - top);      // TL Exploring
+          ctx.fillStyle = 'rgba(219,68,55,0.06)';  ctx.fillRect(left, top, mx - left, my - top);      // TL Exploring
           ctx.fillStyle = 'rgba(244,180,0,0.06)';  ctx.fillRect(mx, my, right - mx, bottom - my);     // BR Scaling
-          ctx.fillStyle = 'rgba(219,68,55,0.05)';  ctx.fillRect(left, my, mx - left, bottom - my);    // BL Not Started
+          ctx.fillStyle = 'rgba(229,231,235,0.05)'; ctx.fillRect(left, my, mx - left, bottom - my);    // BL Excluded
           ctx.strokeStyle = 'rgba(11,18,48,0.16)'; ctx.setLineDash([6, 6]); ctx.lineWidth = 1;
           ctx.beginPath(); ctx.moveTo(mx, top); ctx.lineTo(mx, bottom); ctx.moveTo(left, my); ctx.lineTo(right, my); ctx.stroke();
           ctx.setLineDash([]);
@@ -1221,101 +1254,97 @@
           ctx.restore();
         },
         afterDatasetsDraw(chart) {
-          const { ctx, chartArea } = chart;
+          const { ctx } = chart;
           const meta = chart.getDatasetMeta(0);
           if (!meta || !meta.data) return;
           ctx.save();
-          ctx.font = '700 10px Inter, sans-serif'; ctx.textAlign = 'center';
-          const boxes = [];
+          ctx.font = '700 10px Inter, sans-serif'; ctx.fillStyle = 'rgba(11,18,48,0.72)'; ctx.textAlign = 'center';
           meta.data.forEach((pt, i) => {
             const d = chart.data.datasets[0].data[i];
             if (!d || !d.stat) return;
-            const label = abbrev(d.stat.account, 2);
-            if (!label) return;
-            const radius = pt.options.radius || 10;
-            let x = pt.x;
-            let y = pt.y - radius - 6;
-            let baseline = 'bottom';
-            if (chartArea && y < chartArea.top + 12) {
-              y = pt.y + radius + 6;
-              baseline = 'top';
-            }
-            const width = ctx.measureText(label).width;
-            const height = 12;
-            const box = { left: x - width / 2 - 2, right: x + width / 2 + 2, top: baseline === 'bottom' ? y - height - 2 : y - 2, bottom: baseline === 'bottom' ? y + 2 : y + height + 2 };
-            if (boxes.some((b) => !(box.right < b.left || box.left > b.right || box.bottom < b.top || box.top > b.bottom))) return;
-            boxes.push(box);
-            ctx.textBaseline = baseline;
-            ctx.strokeStyle = 'rgba(255,255,255,0.95)';
-            ctx.lineWidth = 3;
-            ctx.lineJoin = 'round';
-            ctx.strokeText(label, x, y);
-            ctx.fillStyle = 'rgba(11,18,48,0.92)';
-            ctx.fillText(label, x, y);
+            // Draw a short account abbreviation to keep the chart readable. Full name available in tooltip.
+            ctx.fillText(abbrev(d.stat.account || d.stat.Account || ''), pt.x, pt.y - (pt.options.radius || 8) - 6);
           });
           ctx.restore();
         }
       };
 
-      // Chart 1 — Adoption Maturity Quadrant (bubbles = accounts with Adoption Score, High accounts are positioned in the Leaders region)
+      // Chart 1 — Adoption Maturity Quadrant (bubbles = accounts; plots ONE bubble per account)
       function buildQuadrant(rows) {
         if (typeof Chart === 'undefined') return;
         document.getElementById('maturityStats').innerHTML = [
-          ['Leaders', '#0f9d58'], ['Exploring', '#165fcc'], ['Scaling', '#f4b400'], ['Not Started', '#db4437']
+          ['Leaders (High)', '#0f9d58'], ['Exploring (Low)', '#db4437'], ['Scaling (Moderate)', '#f4b400'], ['Excluded', '#d1d5db']
         ].map(([t, c]) => `<span class="maturity-chip"><span class="m-dot" style="background:${c}"></span>${t}</span>`).join('');
 
-        const focus = currentVertical !== 'All Verticals';
-        const filtered = rows.filter((r) => {
-          return ['High', 'Moderate', 'Low'].includes(adoptionBucket(getValue(r, 'Adoption Level')));
-        });
+        // Filter to account-level records with valid adoption levels (High/Moderate/Low)
+        const acctRows = (rows || []).filter((r) => {
+          const b = adoptionBucket(getValue(r, 'Adoption Level'));
+          return ['High', 'Moderate', 'Low'].includes(b);
+        }).filter((r) => { return currentVertical === 'All Verticals' ? true : String(getValue(r, 'Vertical') || '').trim() === currentVertical; });
 
-        const points = filtered.map((row, i) => {
-          const account = String(getValue(row, 'Account') || '').trim() || 'Unknown Account';
-          const adoptionLevel = adoptionBucket(getValue(row, 'Adoption Level'));
-          const scoreRaw = String(getValue(row, 'Adoption Score') || '').replace('%', '').trim();
-          const score = scoreRaw !== ''
-            ? Math.max(0, Math.min(100, Number(scoreRaw) || 0))
-            : adoptionLevel === 'High' ? 90 : adoptionLevel === 'Moderate' ? 65 : 35;
-          const syncState = normalizeSync(getValue(row, 'Initial Sync-Up Status'));
-          const maturity = syncState === 'Completed' ? 88 : syncState === 'In Progress' ? 56 : 18;
-          const res = parseNumber(getValue(row, 'MWP Resource Count'));
-          const r = 6 + Math.min(18, res / 2);
-          const dim = focus && String(getValue(row, 'Vertical') || '').trim() !== currentVertical;
+        // mapping ranges per adoption
+        const RANGES = {
+          High: { x: [75, 95], y: [70, 95], color: '#0f9d58' },
+          Moderate: { x: [60, 85], y: [35, 60], color: '#f4b400' },
+          Low: { x: [20, 45], y: [50, 75], color: '#db4437' }
+        };
+
+        function hashSeed(s) { let h = 0; for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; } return Math.abs(h); }
+
+        const points = acctRows.map((r, i) => {
+          const acct = String(getValue(r, 'Account') || '').trim() || 'Unknown';
+          const vertical = String(getValue(r, 'Vertical') || '').trim() || 'Unknown';
+          const adoption = adoptionBucket(getValue(r, 'Adoption Level'));
+          const range = RANGES[adoption] || RANGES.Low;
+          const res = parseNumber(getValue(r, 'MWP Resource Count'));
+          const seed = hashSeed(acct + '|' + vertical + '|' + i);
+          const fx = (seed % 1000) / 1000;
+          const jitterX = ((i % 7) - 3) * 0.45;
+          let x = range.x[0] + fx * (range.x[1] - range.x[0]) + jitterX;
+          x = Math.max(5, Math.min(95, x));
+
+          const syncScore = normalizeSync(getValue(r, 'Initial Sync-Up Status')) === 'Completed' ? 40 : normalizeSync(getValue(r, 'Initial Sync-Up Status')) === 'In Progress' ? 20 : 0;
+          const pocScore = String(getValue(r, 'Acct Arch PoC') || '').trim() ? 30 : 0;
+          const etaScore = String(getValue(r, 'Tentative ETA') || '').trim() ? 30 : 0;
+          const y = syncScore + pocScore + etaScore;
+          const radius = res > 0 ? Math.min(28, 6 + Math.sqrt(res) * 2) : 8;
           return {
-            x: score,
-            y: maturity,
-            r,
-            stat: { account, adoptionLevel, score, maturity, syncState, resources: res, vertical: String(getValue(row, 'Vertical') || '').trim() || 'Unknown' },
-            dim,
+            x: Math.round(x * 10) / 10,
+            y: Math.round(y * 10) / 10,
+            r: radius,
+            stat: {
+              account: acct,
+              vertical,
+              adoption,
+              resourceCount: res,
+              initialSync: normalizeSync(getValue(r, 'Initial Sync-Up Status')),
+              acctArchPoc: String(getValue(r, 'Acct Arch PoC') || '').trim(),
+              trackerInPlace: String(getValue(r, 'Tracker in place') || '').trim(),
+              tentativeETA: String(getValue(r, 'Tentative ETA') || '').trim(),
+              aiCoach: String(getValue(r, 'AI Coach') || '').trim()
+            },
             _i: i
           };
         });
 
-        // Spread points slightly to reduce exact overlap
-        points.forEach((p, k) => { p.x += ((k % 5) - 2) * 0.3; p.y += ((k % 3) - 1) * 0.3; });
-
-        // Relaxation pass: separate overlapping bubbles so labels are readable
-        const rUnit = points.map((p) => (p.r / 4) + 1.6);
-        for (let it = 0; it < 120; it++) {
-          let moved = false;
+        // Resolve collisions lightly so bubbles don't sit on top of each other
+        const rUnit = points.map((p) => (p.r / 4) + 1.2);
+        for (let it = 0; it < 180; it++) {
           for (let i = 0; i < points.length; i++) {
             for (let j = i + 1; j < points.length; j++) {
               let dx = points[j].x - points[i].x, dy = points[j].y - points[i].y;
-              let d = Math.hypot(dx, dy) || 0.001;
-              let min = rUnit[i] + rUnit[j];
-              if (d < min) {
-                const push = (min - d) / (2 * d);
-                const px = dx * push, py = dy * push;
-                points[i].x -= px; points[i].y -= py;
-                points[j].x += px; points[j].y += py;
-                moved = true;
-              }
+              let d = Math.hypot(dx, dy) || 0.001, min = rUnit[i] + rUnit[j];
+              if (d < min) { const push = (min - d) / 2 / d; points[i].x -= dx * push; points[i].y -= dy * push; points[j].x += dx * push; points[j].y += dy * push; }
             }
           }
-          // Keep points inside visual bounds
           points.forEach((p) => { p.x = Math.min(95, Math.max(5, p.x)); p.y = Math.min(93, Math.max(7, p.y)); });
-          if (!moved) break;
         }
+
+        // color by adoption
+        const colors = points.map((p) => {
+          const c = RANGES[p.stat.adoption] ? RANGES[p.stat.adoption].color : '#7c3aed';
+          return hexA(c, 0.88);
+        });
 
         if (maturityChart) maturityChart.destroy();
         maturityChart = new Chart(document.getElementById('maturityChart'), {
@@ -1323,15 +1352,9 @@
           data: {
             datasets: [{
               data: points,
-              backgroundColor: points.map((p) => {
-                const color = p.stat.adoptionLevel === 'High' ? '#0f9d58' : p.stat.adoptionLevel === 'Moderate' ? '#f4b400' : '#db4437';
-                return hexA(color, p.dim ? 0.18 : 0.85);
-              }),
-              borderColor: points.map((p) => {
-                const color = p.stat.adoptionLevel === 'High' ? '#0f9d58' : p.stat.adoptionLevel === 'Moderate' ? '#f4b400' : '#db4437';
-                return hexA(color, p.dim ? 0.35 : 1);
-              }),
-              borderWidth: 2, hoverBorderWidth: 3
+              backgroundColor: colors,
+              borderColor: colors.map((c) => c.replace(/rgba\((\d+,\d+,\d+),([\d.]+)\)/, 'rgba($1,1)')),
+              borderWidth: 1.5, hoverBorderWidth: 2.5
             }]
           },
           options: {
@@ -1344,18 +1367,22 @@
                   label: (ctx) => {
                     const s = ctx.raw.stat;
                     return [
-                      `Adoption Level: ${s.adoptionLevel}`,
-                      `Adoption Score: ${s.score}%`,
-                      `Sync Status: ${s.syncState}`,
-                      `Resources: ${s.resources}`
+                      `Vertical: ${s.vertical}`,
+                      `Adoption Level: ${s.adoption}`,
+                      `Resource Count: ${s.resourceCount}`,
+                      `Initial Sync-Up Status: ${s.initialSync}`,
+                      `Acct Arch PoC: ${s.acctArchPoc || 'Not Identified'}`,
+                      `Tracker in Place: ${s.trackerInPlace || 'Not Available'}`,
+                      `Tentative ETA: ${s.tentativeETA || 'Not Provided'}`,
+                      `AI Coach: ${s.aiCoach || '—'}`
                     ];
                   }
                 }
               }
             },
             scales: {
-              x: { min: 0, max: 100, title: { display: true, text: 'Adoption Readiness  (Low → High)', font: { weight: '700' } }, ticks: { callback: (v) => v + '%' } },
-              y: { min: 0, max: 100, title: { display: true, text: 'Implementation Maturity  (Low → High)', font: { weight: '700' } }, ticks: { callback: (v) => v + '%' } }
+              x: { min: 0, max: 100, title: { display: true, text: 'Adoption Level (Low → High)', font: { weight: '700' } }, ticks: { callback: (v) => v + '%' } },
+              y: { min: 0, max: 100, title: { display: true, text: 'AI Adoption Readiness Score (%)', font: { weight: '700' } }, ticks: { callback: (v) => v + '%' } }
             }
           },
           plugins: [quadrantPlugin]
@@ -1372,8 +1399,8 @@
         const dim = (v) => focus && v !== currentVertical;
 
         const datasets = ADOPTION.map((a) => ({
-          label: a.key === 'Not Yet Identified' ? 'Not Identified' : a.key,
-          data: stats.map((s) => s[a.key]),
+          label: a.key,
+          data: stats.map((s) => s[a.key] || 0),
           backgroundColor: stats.map((s) => hexA(a.color, dim(s.vertical) ? 0.2 : 0.9)),
           borderRadius: 4,
           stack: 'adoption'
@@ -1550,6 +1577,7 @@
         document.getElementById('sumHigh').textContent = c['High'];
         document.getElementById('sumModerate').textContent = c['Moderate'];
         document.getElementById('sumLow').textContent = c['Low'];
+        document.getElementById('sumNI').textContent = c['Not Yet Identified'];
       }
 
       // Tab buttons are built once from the full dataset so every vertical is always available.
@@ -1638,6 +1666,7 @@
         populateVerticalFilter(allRows);
         buildVerticalTabs(allRows);
         applyFilters();
+        console.log('Total rows loaded:', allRows.length);
       }
 
       // Data health / freshness indicators
@@ -1754,15 +1783,17 @@
 
       // ================= Account Details collapsible =================
       (function () {
-        const toggle = document.getElementById('acctToggle');
+        const header = document.getElementById('acctHeader');
         const body = document.getElementById('acctBody');
-        const txt = toggle ? toggle.querySelector('.acct-toggle-text') : null;
-        if (toggle && body) {
-          toggle.addEventListener('click', () => {
+        if (header && body) {
+          const toggle = () => {
             const open = body.hasAttribute('hidden');
             if (open) { body.removeAttribute('hidden'); } else { body.setAttribute('hidden', ''); }
-            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-            if (txt) txt.textContent = open ? 'Collapse Table' : 'Expand Table';
+            header.setAttribute('aria-expanded', open ? 'true' : 'false');
+          };
+          header.addEventListener('click', toggle);
+          header.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
           });
         }
       })();
@@ -1922,14 +1953,14 @@
         if (!fab || !panel || !msgs) return;
 
         const SUGGESTIONS = [
-          'Show accounts with POC missing',
-          'Which vertical has highest low adoption?',
-          'How many accounts are not yet identified?',
-          'Show ETA missing accounts',
-          'Which accounts have sync not started?',
-          'Show tracker preparedness summary',
-          'Give leadership summary',
-          'Show active projects without PoC'
+          '🔍 Show accounts with POC missing',
+          '📊 Show adoption summary',
+          '📅 Show accounts with ETA missing',
+          '⚠️ Show sync not started accounts',
+          '🏢 Show vertical-wise adoption',
+          '🚀 Show high adoption accounts',
+          '📋 Show active accounts',
+          '📈 Give leadership summary'
         ];
 
         // ---- data helpers (operate on the live allRows dataset) ----
@@ -2061,6 +2092,11 @@
             const top = topVerticalCount(m);
             return top ? `<b>Highest adoption vertical:</b> ${escHtml(top.vertical)} with <b>${top.count}</b> high-adoption account${top.count === 1 ? '' : 's'}.` : 'No accounts are marked High adoption yet.';
           }
+          // High adoption accounts
+          if (has('high') && has('adoption') && has('account', 'accounts')) {
+            const list = all.filter((r) => adoptionBucket(getValue(r, 'Adoption Level')) === 'High');
+            return `<b>High adoption accounts:</b> ${list.length}${listBlock(list, 'No accounts are marked High adoption.')}`;
+          }
           // Vertical with most not-identified
           if (has('vertical') && has('not identified', 'unidentified')) {
             const list = all.filter((r) => adoptionBucket(getValue(r, 'Adoption Level')) === 'Not Yet Identified');
@@ -2072,7 +2108,7 @@
             return `<b>Adoption level summary</b><br><span class="m-badge" style="background:#e8f7ee;color:#0f7f3a;">High: ${ac['High']}</span><span class="m-badge" style="background:#fff6e6;color:#b76a00;">Moderate: ${ac['Moderate']}</span><span class="m-badge" style="background:#fdeceb;color:#b92a25;">Low: ${ac['Low']}</span><span class="m-badge" style="background:#eef1f5;color:#617085;">Not Identified: ${ac['Not Yet Identified']}</span>`;
           }
           // Accounts by vertical
-          if (has('by vertical', 'accounts by', 'per vertical')) {
+          if (has('by vertical', 'accounts by', 'per vertical') || q.includes('vertical-wise') || q.includes('vertical wise')) {
             const m = byVertical(all);
             const lines = Object.keys(m).sort((a, b) => m[b].length - m[a].length)
               .map((k) => `<span class="m-badge" style="background:#eef4ff;color:#165fcc;">${escHtml(k)}: ${m[k].length}</span>`).join('');
@@ -2126,8 +2162,33 @@
         }
 
         function renderChips() {
-          chips.innerHTML = SUGGESTIONS.map((s) => `<button class="chat-chip">${escHtml(s)}</button>`).join('');
-          chips.querySelectorAll('.chat-chip').forEach((c) => c.addEventListener('click', () => respond(c.textContent)));
+          const all = rows();
+          const activeCount = all.filter(isActive).length;
+          const pocMissCount = all.filter(pocMissing).length;
+          const etaPct = all.length ? Math.round((etaCounts(all).given / all.length) * 100) : 0;
+          const insightChips = [
+            { label: `✅ Active Accounts: ${activeCount}`, query: 'Show active accounts' },
+            { label: `✅ POC Missing: ${pocMissCount}`, query: 'Show accounts with POC missing' },
+            { label: `✅ ETA Coverage: ${etaPct}%`, query: 'Show ETA status details' }
+          ];
+
+          chips.innerHTML = `
+            <div class="chat-chip-group">
+              <span class="chat-chip-label">Suggested Questions</span>
+              ${SUGGESTIONS.map((s) => `<button class="chat-chip">${escHtml(s)}</button>`).join('')}
+            </div>
+            <div class="chat-chip-group">
+              <span class="chat-chip-label">Quick Insights</span>
+              ${insightChips.map((item) => `<button class="chat-chip" data-query="${escHtml(item.query)}">${escHtml(item.label)}</button>`).join('')}
+            </div>
+          `;
+
+          chips.querySelectorAll('.chat-chip').forEach((c) => {
+            c.addEventListener('click', () => {
+              const query = c.dataset.query || c.textContent;
+              respond(query);
+            });
+          });
         }
 
         let welcomed = false;
@@ -2147,7 +2208,7 @@
           }
         }
 
-        function openChat() { panel.classList.add('open'); panel.classList.remove('min'); panel.setAttribute('aria-hidden', 'false'); fab.classList.add('hidden'); welcome(); setTimeout(() => input && input.focus(), 300); }
+        function openChat() { panel.classList.add('open'); panel.classList.remove('min'); panel.setAttribute('aria-hidden', 'false'); fab.classList.add('hidden'); welcome(); renderChips(); setTimeout(() => input && input.focus(), 300); }
         function closeChat() { panel.classList.remove('open'); panel.setAttribute('aria-hidden', 'true'); fab.classList.remove('hidden'); }
 
         fab.addEventListener('click', openChat);
