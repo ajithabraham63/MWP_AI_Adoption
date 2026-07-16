@@ -1172,8 +1172,11 @@
         const r = parseInt(h.substring(0, 2), 16), g = parseInt(h.substring(2, 4), 16), b = parseInt(h.substring(4, 6), 16);
         return `rgba(${r},${g},${b},${a})`;
       }
-      function abbrev(v) {
-        return v.split(/[\s&/-]+/).filter(Boolean).map((w) => w[0]).join('').slice(0, 4).toUpperCase();
+      function abbrev(v, maxLen = 2) {
+        const parts = String(v ?? '').split(/[\s&/-]+/).filter(Boolean);
+        if (!parts.length) return '';
+        if (parts.length === 1) return parts[0].slice(0, maxLen).toUpperCase();
+        return parts.map((w) => w[0]).join('').slice(0, maxLen).toUpperCase();
       }
       // Aggregate a rowset into per-vertical stats.
       function verticalStats(rows) {
@@ -1218,18 +1221,31 @@
           ctx.restore();
         },
         afterDatasetsDraw(chart) {
-          const { ctx } = chart;
+          const { ctx, chartArea } = chart;
           const meta = chart.getDatasetMeta(0);
           if (!meta || !meta.data) return;
           ctx.save();
-          ctx.font = '800 10px Inter, sans-serif'; ctx.textAlign = 'center';
+          ctx.font = '700 10px Inter, sans-serif'; ctx.textAlign = 'center';
+          const boxes = [];
           meta.data.forEach((pt, i) => {
             const d = chart.data.datasets[0].data[i];
             if (!d || !d.stat) return;
-            const label = abbrev(d.stat.account);
+            const label = abbrev(d.stat.account, 2);
             if (!label) return;
-            const x = pt.x;
-            const y = pt.y - (pt.options.radius || 10) - 6;
+            const radius = pt.options.radius || 10;
+            let x = pt.x;
+            let y = pt.y - radius - 6;
+            let baseline = 'bottom';
+            if (chartArea && y < chartArea.top + 12) {
+              y = pt.y + radius + 6;
+              baseline = 'top';
+            }
+            const width = ctx.measureText(label).width;
+            const height = 12;
+            const box = { left: x - width / 2 - 2, right: x + width / 2 + 2, top: baseline === 'bottom' ? y - height - 2 : y - 2, bottom: baseline === 'bottom' ? y + 2 : y + height + 2 };
+            if (boxes.some((b) => !(box.right < b.left || box.left > b.right || box.bottom < b.top || box.top > b.bottom))) return;
+            boxes.push(box);
+            ctx.textBaseline = baseline;
             ctx.strokeStyle = 'rgba(255,255,255,0.95)';
             ctx.lineWidth = 3;
             ctx.lineJoin = 'round';
