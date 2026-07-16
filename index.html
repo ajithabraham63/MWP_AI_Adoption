@@ -645,7 +645,6 @@
             <div class="mini-badge"><span class="chip high">High</span> <span class="b-count" id="sumHigh">0</span></div>
             <div class="mini-badge"><span class="chip moderate">Moderate</span> <span class="b-count" id="sumModerate">0</span></div>
             <div class="mini-badge"><span class="chip low">Low</span> <span class="b-count" id="sumLow">0</span></div>
-            <div class="mini-badge"><span class="chip gray">Not Yet Identified</span> <span class="b-count" id="sumNI">0</span></div>
           </div>
         </div>
       </section>
@@ -1065,9 +1064,18 @@
         return [];
       }
 
+      function normalizeKey(key) {
+        return String(key ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+      }
       function getValue(row, key) {
         if (!row) return '';
-        return row[key] ?? row[key.toLowerCase()] ?? row[key.replace(/\s+/g, ' ').trim()] ?? '';
+        const direct = row[key] ?? row[String(key).toLowerCase()] ?? row[String(key).trim()];
+        if (direct !== undefined) return direct;
+        const target = normalizeKey(key);
+        for (const prop of Object.keys(row)) {
+          if (normalizeKey(prop) === target) return row[prop];
+        }
+        return '';
       }
 
       function parseNumber(value) {
@@ -1155,8 +1163,7 @@
       const ADOPTION = [
         { key: 'High', color: '#0f9d58' },
         { key: 'Moderate', color: '#f4b400' },
-        { key: 'Low', color: '#db4437' },
-        { key: 'Not Yet Identified', color: '#9aa0a6' }
+        { key: 'Low', color: '#db4437' }
       ];
       const PALETTE = ['#165fcc', '#0f9d58', '#f4b400', '#db4437', '#7c3aed', '#0891b2', '#db2777', '#ea580c', '#4b5563', '#0d9488'];
 
@@ -1215,46 +1222,61 @@
           const meta = chart.getDatasetMeta(0);
           if (!meta || !meta.data) return;
           ctx.save();
-          ctx.font = '800 10px Inter, sans-serif'; ctx.fillStyle = 'rgba(11,18,48,0.72)'; ctx.textAlign = 'center';
+          ctx.font = '800 10px Inter, sans-serif'; ctx.textAlign = 'center';
           meta.data.forEach((pt, i) => {
             const d = chart.data.datasets[0].data[i];
             if (!d || !d.stat) return;
-            ctx.fillText(abbrev(d.stat.vertical), pt.x, pt.y - (pt.options.radius || 10) - 5);
+            const label = abbrev(d.stat.account);
+            if (!label) return;
+            const x = pt.x;
+            const y = pt.y - (pt.options.radius || 10) - 6;
+            ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            ctx.strokeText(label, x, y);
+            ctx.fillStyle = 'rgba(11,18,48,0.92)';
+            ctx.fillText(label, x, y);
           });
           ctx.restore();
         }
       };
 
-      // Chart 1 — Adoption Maturity Quadrant (bubbles = verticals, size = projects, selected vertical highlighted)
+      // Chart 1 — Adoption Maturity Quadrant (bubbles = accounts with Adoption Score, High accounts are positioned in the Leaders region)
       function buildQuadrant(rows) {
         if (typeof Chart === 'undefined') return;
         document.getElementById('maturityStats').innerHTML = [
           ['Leaders', '#0f9d58'], ['Exploring', '#165fcc'], ['Scaling', '#f4b400'], ['Not Started', '#db4437']
         ].map(([t, c]) => `<span class="maturity-chip"><span class="m-dot" style="background:${c}"></span>${t}</span>`).join('');
 
-        const stats = verticalStats(rows);
-        const maxProj = Math.max(1, ...stats.map((s) => s.projects));
         const focus = currentVertical !== 'All Verticals';
-        const points = stats.map((s, i) => {
-          const readiness = s.projects ? Math.round((s.active / s.projects) * 100) : 0;
-          const maturity = s.projects ? Math.round(((s.completed + 0.5 * s.inprog) / s.projects) * 100) : 0;
-          const r = 10 + (s.projects / maxProj) * 24;
-          return { x: readiness, y: maturity, r, stat: s, _i: i };
+        const filtered = rows.filter((r) => {
+          return ['High', 'Moderate', 'Low'].includes(adoptionBucket(getValue(r, 'Adoption Level')));
         });
-        // Break exact ties, then relax so no two bubbles overlap (keeps every vertical visible).
-        points.forEach((p, k) => { p.x += ((k % 5) - 2) * 0.7; p.y += ((k % 3) - 1) * 0.7; });
-        const rUnit = points.map((p) => (p.r / 4) + 1.6);
-        for (let it = 0; it < 220; it++) {
-          for (let i = 0; i < points.length; i++) {
-            for (let j = i + 1; j < points.length; j++) {
-              let dx = points[j].x - points[i].x, dy = points[j].y - points[i].y;
-              let d = Math.hypot(dx, dy) || 0.001, min = rUnit[i] + rUnit[j];
-              if (d < min) { const push = (min - d) / 2 / d; points[i].x -= dx * push; points[i].y -= dy * push; points[j].x += dx * push; points[j].y += dy * push; }
-            }
-          }
-          points.forEach((p) => { p.x = Math.min(95, Math.max(5, p.x)); p.y = Math.min(93, Math.max(7, p.y)); });
-        }
-        const isDim = (s) => focus && s.vertical !== currentVertical;
+
+        const points = filtered.map((row, i) => {
+          const account = String(getValue(row, 'Account') || '').trim() || 'Unknown Account';
+          const adoptionLevel = adoptionBucket(getValue(row, 'Adoption Level'));
+          const scoreRaw = String(getValue(row, 'Adoption Score') || '').replace('%', '').trim();
+          const score = scoreRaw !== ''
+            ? Math.max(0, Math.min(100, Number(scoreRaw) || 0))
+            : adoptionLevel === 'High' ? 90 : adoptionLevel === 'Moderate' ? 65 : 35;
+          const syncState = normalizeSync(getValue(row, 'Initial Sync-Up Status'));
+          const maturity = syncState === 'Completed' ? 88 : syncState === 'In Progress' ? 56 : 18;
+          const res = parseNumber(getValue(row, 'MWP Resource Count'));
+          const r = 6 + Math.min(18, res / 2);
+          const dim = focus && String(getValue(row, 'Vertical') || '').trim() !== currentVertical;
+          return {
+            x: score,
+            y: maturity,
+            r,
+            stat: { account, adoptionLevel, score, maturity, syncState, resources: res, vertical: String(getValue(row, 'Vertical') || '').trim() || 'Unknown' },
+            dim,
+            _i: i
+          };
+        });
+
+        // Spread points slightly to reduce exact overlap
+        points.forEach((p, k) => { p.x += ((k % 5) - 2) * 0.3; p.y += ((k % 3) - 1) * 0.3; });
 
         if (maturityChart) maturityChart.destroy();
         maturityChart = new Chart(document.getElementById('maturityChart'), {
@@ -1262,8 +1284,14 @@
           data: {
             datasets: [{
               data: points,
-              backgroundColor: points.map((p) => hexA(PALETTE[p._i % PALETTE.length], isDim(p.stat) ? 0.12 : 0.8)),
-              borderColor: points.map((p) => hexA(PALETTE[p._i % PALETTE.length], isDim(p.stat) ? 0.25 : 1)),
+              backgroundColor: points.map((p) => {
+                const color = p.stat.adoptionLevel === 'High' ? '#0f9d58' : p.stat.adoptionLevel === 'Moderate' ? '#f4b400' : '#db4437';
+                return hexA(color, p.dim ? 0.18 : 0.85);
+              }),
+              borderColor: points.map((p) => {
+                const color = p.stat.adoptionLevel === 'High' ? '#0f9d58' : p.stat.adoptionLevel === 'Moderate' ? '#f4b400' : '#db4437';
+                return hexA(color, p.dim ? 0.35 : 1);
+              }),
               borderWidth: 2, hoverBorderWidth: 3
             }]
           },
@@ -1273,15 +1301,14 @@
               legend: { display: false },
               tooltip: {
                 callbacks: {
-                  title: (items) => items[0].raw.stat.vertical,
+                  title: (items) => items[0].raw.stat.account,
                   label: (ctx) => {
                     const s = ctx.raw.stat;
                     return [
-                      `Total Projects: ${s.projects}`,
-                      `Active: ${s.active}   Inactive: ${s.inactive}`,
-                      `POC Not Identified: ${s.poc}`,
-                      `High: ${s.High}   Moderate: ${s.Moderate}`,
-                      `Low: ${s.Low}   Not Identified: ${s['Not Yet Identified']}`
+                      `Adoption Level: ${s.adoptionLevel}`,
+                      `Adoption Score: ${s.score}%`,
+                      `Sync Status: ${s.syncState}`,
+                      `Resources: ${s.resources}`
                     ];
                   }
                 }
@@ -1484,7 +1511,6 @@
         document.getElementById('sumHigh').textContent = c['High'];
         document.getElementById('sumModerate').textContent = c['Moderate'];
         document.getElementById('sumLow').textContent = c['Low'];
-        document.getElementById('sumNI').textContent = c['Not Yet Identified'];
       }
 
       // Tab buttons are built once from the full dataset so every vertical is always available.
